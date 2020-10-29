@@ -1,0 +1,21 @@
+
+* Funciones unistd.h 
+/**
+ *fork() - Clona el proceso que realiza la llamada(variables, espacio de direcciones diferentes
+ *pid_t - Devuelve el id del hijo clonado o un valor 0 al hijo.
+ * -1 - Si hubo un error.
+ *
+ *getpid() - PID del proceso actual.
+ *getppid() - PID del padre del proceso
+ *exit() - Termina el proceso
+ *wait/waitpid - Espera al hijo bloquante
+ */
+
+El padre crea la variable i.
+
+La variable i la comparten padre e hijos?
+Las modificaciones que hace el padre, se reflejan en las variables de los hijos?
+Las modificaciones que hace el hijo, las ve el padre?
+Las modificaciones que hace un hijo en la variable i, la pueden ver todos los hermanos?
+
+Serie del 1 al 10.x

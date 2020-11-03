@@ -8,10 +8,9 @@ int main(){
     pid_t pid_child;
     printf("How many children: ");
     scanf("%d", &n);
-
+    
     while( n > 0) {
-	
-	pid_child = fork(); // <- produce other child.
+	pid_child = fork();
 	
 	switch(pid_child) {
 	case -1:
@@ -19,12 +18,12 @@ int main(){
 	    return -1;
 	case 0: //Child
 	    printf("Parent: %d Child %d: %d\n", getppid(), n, getpid() );
-	    n--;
-	    break;
+	    for(int i = 0; i < 10; i++)
+		printf("%d\n",i);
+	    printf("Dead child : %d\n", getpid());
+	    exits(0);
 	default://Parent
-	    printf("Dead Parent : %d\n", getpid()); //Not more produce.
-	    exit(0); //it should kill paretn because, it doesn't more children.
-	    
+	    n--;
 
 	}
 	    

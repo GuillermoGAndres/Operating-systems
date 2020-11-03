@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 int main() {
     printf("Prueba proceso\n");
@@ -8,7 +9,7 @@ int main() {
     
     if( pid_my_son == -1 ) {
         printf("No se pudo crear un proceso");
-        return -1;
+        exit(0);
     } else if (pid_my_son == 0) {
         printf("Soy el proceso hijo con PID %d y mi padre es PID = %d", getpid(), getppid());
     } else {

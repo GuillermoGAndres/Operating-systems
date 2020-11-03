@@ -13,6 +13,7 @@ int main() {
     printf("================\n");
 
     while( n > 0){
+
       switch(pid_hijo = fork()) {
       case -1:
 	printf("\nError al crear el proceso\n");
@@ -25,6 +26,7 @@ int main() {
 	n--;
 	break;
       }
+      
     }
 
     printf("\n\tTermino el proceso %d\n", getpid());
@@ -35,11 +37,6 @@ int main() {
     return 0;
 }
 
-El padre crea la variable i?
-La variable i la comparten padre e hijos?
-Las modificaciones que hace el padre, se reflejan en las variables de los hijos?
-Las modificaciones que hace el hijo, las ve el padre?
-Las modificaciones que hace un hijo en la variable i, la pueden ver todos los hermanos?
 
 
   

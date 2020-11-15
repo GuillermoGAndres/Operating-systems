@@ -1,0 +1,10 @@
+backup.c
+backup.out
+examen2 de Procesos backup.pdf
+lista_archivos.txt
+prueba2
+prueba.txt
+README.md
+README.md~
+respaldo
+9

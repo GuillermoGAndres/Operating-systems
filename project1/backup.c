@@ -17,7 +17,7 @@
 #include <time.h>
 #include <string.h>
 
-void leerRutas(char* ruta_respaldo, char* ruta_destino);
+void leer_rutas(char* ruta_respaldo, char* ruta_destino);
 void respaldar(int total_ficheros, char* nombre_fichero);
 
 
@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
     if (argc == 1) {	
 	//Esto solo devuelven las rutas de respaldo y destino escritas correctamente
 	// con su formato arrglos de caracteres pero no valida si existen esas rutas;
-	leerRutas(ruta_respaldo, ruta_destino);
+	leer_rutas(ruta_respaldo, ruta_destino);
 	/* printf("Salinda\n"); */
 	/* printf("Ruta respaldo: %s\n" , ruta_respaldo); */
 	/* printf("Ruta destiono: %s\n" , ruta_destino);	 */
@@ -53,13 +53,25 @@ int main(int argc, char *argv[]) {
 	/* printf("Ruta destiono: %s\n" , ruta_destino); */
 	
     }
-    
-    // 1) Genera un archivo con la lista de los nombres de los archivos
+    // 1-1) Genera un archivo con la lista de los nombres de los archivos
     // del directorio a respaldar y el numero total de archivos
-    // Crea el file automaticamente, si ya existe lo eliminar y lo
+
+    // Crea un archivo automaticamente, si ya existe lo eliminar y lo
     // vuelve a crear actualizando con los numeros valores
-    //system("ls > lista_archivos.txt");
-    //system("ls | wc -l >> lista_archivos.txt");
+    system("ls > lista_archivos.txt");
+    system("ls | wc -l >> lista_archivos.txt");
+
+
+    //2) Crear directorio de respaldo, si el directorio de respaldo ya existe
+    // debera de eliminarlo.
+    // Hasta el momento tenemos las rutas pero no sabesmo si exiten.
+    char comando[1000] = "mkdir ";
+    strcat(comando, ruta_respaldo);
+    printf("Comando completo: %s\n", comando);
+    // Un valor cero significa que se ejecuto el comando exitosamente
+    // Un numero distinto de cero, es que algo ocurrio mal.
+    int status = system(comando);
+    printf("Status; %d\n", status);
 
         
     pid_hijo = fork();
@@ -95,11 +107,12 @@ void respaldar(int total_ficheros, char* nombre_fichero) {
 
 
 /**
- * Esto solo devuelven las rutas de respaldo y destino escritas correctamente
- * con su formato arrglos de caracteres pero no valida si existen esas rutas
- * Return un arreglo de rutas
+ * Lee del usuario las rutas de respaldo y destiono, ya sea de entrada 
+ * estandar o archivo.
+ * Escribe por referencia las rutas de respaldo y destino escritas correctamente
+ * con su formato arrglos de caracteres pero no valida si existen esas rutas.
  */
-void leerRutas(char* ruta_respaldo, char* ruta_destino) {
+void leer_rutas(char* ruta_respaldo, char* ruta_destino) {
     //char* rutas[2];
     //char ruta_respaldo[1000];
     //char ruta_destino[1000];
@@ -128,6 +141,7 @@ void leerRutas(char* ruta_respaldo, char* ruta_destino) {
 	    scanf("%s", filename);
 	    //printf("Su nombre es : %s\n", file_name);
 	    FILE* file = fopen(filename, "r");
+	    // Captura la posible excepcion si no se pudo abrir.
 	    if (file == NULL) {
 		printf("No se pudo abrir correctamente su archivo.\n");
 		printf("Verificar si existe.\n");
@@ -140,7 +154,9 @@ void leerRutas(char* ruta_respaldo, char* ruta_destino) {
 		fscanf(file, "%s", ruta_destino);
 		printf("Ruta destino: %s\n", ruta_destino);
 		flag = 0;
+		fclose(file);
 	    }
+
 	} else {
 	    // Numero incorrecto.
 	    printf("Ingreso un numero no valido\n");

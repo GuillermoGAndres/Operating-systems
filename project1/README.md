@@ -2,9 +2,9 @@
 
 ## Usage
 ~~~
-backup directorio_respadar directorio_destino
+./backup directorio_respadar directorio_destino
 ~~~
-Las entradas pueden ser:
+Las entradas (rutas relativas o absoluta) pueden ser:
 * Entrada estandar (teclado)
 * Por parametros 
 * Por un archivo

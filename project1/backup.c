@@ -20,14 +20,14 @@
 void leer_rutas(char* ruta_respaldo, char* ruta_destino);
 void crear_directorio(char* ruta_destino);
 void crear_lista_archivos();
-void respaldar(int total_ficheros, char* nombre_fichero);
+void respaldar(int total_ficheros, char* nombre_fichero, char* ruta_destino);
 
 
 int main(int argc, char *argv[]) {
     
     char ruta_respaldo[1000];
     char ruta_destino[1000];
-    int pipe1[2], pipe2[2];
+    int pipe_padre_hijo[2], pipe_hijo_padre[2];
     pid_t pid_hijo;
 
     /* 
@@ -66,37 +66,65 @@ int main(int argc, char *argv[]) {
 
     crear_directorio(ruta_destino);
 
-    
-    pid_hijo = fork();
-    int num_files = 5; // Numero temporal por el momento para pruebas.
-    int contador = 0;
-    
-    while( contador <= num_files){
-	
-	if(pid_hijo == 0) {
-	    // Realizar tareas del padre
-	    
-	} else if (pid_hijo > 0) {
-	    // Realizar tareas del hijo
-	    //El mismo realizara el backup por cada archivo
-	    respaldar(num_files , "foo.txt");
+    /* 
+      3) Enviar al hijo el numero total de archivos a respaldar
+      y cada uno de los nombres de los archivos a respaldar, uno a la vez.
+      En este momento creamos nuestros pipes para comunicacion padre-hijo.
+      
+      El pipe_padre_hijo 
+      padre escribe -> hijo   
+      hijo lee -> padre
+      
+      El pipe_hijo_padre
+      hijo escribe -> padre
+      padre lee -> hijo
+    */
 
-	} else {
-	    // Hubo un fallo en creacion del proceso
-	    perror("Hubo un error en creacion de un proceso");
-	}
-	contador++;
+    // Capturando la posible exception de crear un pipe
+    if(pipe(pipe_padre_hijo) < 0 || pipe(pipe_hijo_padre) < 0) {
+	perror("\nError al crear el pipe");
+	exit(2);
     }
+
+    FILE* lista_archivos = fopen("lista_archivos.txt", "r");
+    char num_files_char[4];
+    int num_files = 5; // Numero temporal por el momento para pruebas.
+
+    fscanf(lista_archivos, "%s", num_files_char);
+    num_files = atoi(num_files_char);
+    /* printf("num_files_char: %s\n", num_files_char); */
+    /* printf("num_files_char: %d\n", num_files); */
+    //printf("num_files_char: %ld\n", sizeof(num_files_char));
+    pid_hijo = fork();
+	
+    if(pid_hijo == 0) {
+	// Realizar tareas del padre
+	
+	close(pipe_padre_hijo[0]); //  Cierro el descriptor de lectura.
+	close(pipe_hijo_padre[1]); // Cierro el descriptor de escritura.
+	// Mando el el numero de archivos al pipe
+	//write(pipe_padre_hijo[1], num_files_char, sizeof(num_files_char) );
+	    
+    } else if (pid_hijo > 0) {
+	// Realizar tareas del hijo
+	//El mismo realizara el backup por cada archivo
+	respaldar(num_files , "foo.txt", ruta_destino);
+
+    } else {
+	// Hubo un fallo en creacion del proceso
+	perror("Hubo un error en creacion de un proceso");
+	exit(-1);
+    }
+
     
     return 0;
 }
 
-void respaldar(int total_ficheros, char* nombre_fichero) {
+void respaldar(int total_ficheros, char* nombre_fichero, char* ruta_destino) {
     printf("total : %d\n", total_ficheros);
     printf("Fichero: %s\n", nombre_fichero);
     
 }
-
 
 
 /**
@@ -157,6 +185,8 @@ void leer_rutas(char* ruta_respaldo, char* ruta_destino) {
     }
 
 }
+
+
 /**
  * Genera un archivo con la lista de los nombres de archivos del
  * directorio a respaldar y el numero total de archivos.
@@ -164,9 +194,10 @@ void leer_rutas(char* ruta_respaldo, char* ruta_destino) {
 void crear_lista_archivos() {
     // Crea un archivo automaticamente, si ya existe lo eliminar y lo
     // vuelve a crear actualizando con los numeros valores
-    system("ls > lista_archivos.txt");
-    system("ls | wc -l >> lista_archivos.txt");    
+    system("ls | wc -l > lista_archivos.txt");    
+    system("ls >> lista_archivos.txt");
 }
+
 
 /**
  * Crea el directorio donde se guardaran los respaldos,
@@ -179,7 +210,7 @@ void crear_directorio(char* ruta_destino) {
     // Eliminar directorio
     printf("Eliminando directorio si es que existe ...\n");
     sleep(1);
-    strcpy(comando, "rm -rf ");
+    strcpy(comando, "rm -rvf ");
     strcat(comando, ruta_destino);
     printf("Comando completo: %s\n", comando);
     // Un valor cero significa que se ejecuto el comando exitosamente

@@ -72,12 +72,12 @@ int main(int argc, char *argv[]) {
       En este momento creamos nuestros pipes para comunicacion padre-hijo.
       
       El pipe_padre_hijo 
-      padre escribe -> hijo   
-      hijo lee -> padre
+      padre escribe al -> hijo   
+      hijo lee del -> padre
       
       El pipe_hijo_padre
-      hijo escribe -> padre
-      padre lee -> hijo
+      hijo escribe al -> padre
+      padre lee del -> hijo
     */
 
     // Capturando la posible exception de crear un pipe
@@ -85,31 +85,91 @@ int main(int argc, char *argv[]) {
 	perror("\nError al crear el pipe");
 	exit(2);
     }
-
-    FILE* lista_archivos = fopen("lista_archivos.txt", "r");
+    
     char num_files_char[4];
-    int num_files = 5; // Numero temporal por el momento para pruebas.
-
-    fscanf(lista_archivos, "%s", num_files_char);
-    num_files = atoi(num_files_char);
-    /* printf("num_files_char: %s\n", num_files_char); */
+    int num_files;
+    char msg[1000];
+    char linea[1000];
+   
     /* printf("num_files_char: %d\n", num_files); */
-    //printf("num_files_char: %ld\n", sizeof(num_files_char));
+
     pid_hijo = fork();
 	
-    if(pid_hijo == 0) {
+    if(pid_hijo > 0) { // PROCESO PADRE
 	// Realizar tareas del padre
+	close(pipe_padre_hijo[0]); //  Cierro el descriptor de lectura, porque va escribir.
+	close(pipe_hijo_padre[1]); // Cierro el descriptor de escritura, porque va escuchar(leer).
+	FILE* lista_archivos = fopen("lista_archivos.txt", "r");
+	// Capturamos la posible exepcion por si no exite el archivo;
+	if(lista_archivos == NULL) {
+	    printf("No es posible abrir el archivo lista_archivos.txt");
+	    exit(-3);
+	}
 	
-	close(pipe_padre_hijo[0]); //  Cierro el descriptor de lectura.
-	close(pipe_hijo_padre[1]); // Cierro el descriptor de escritura.
-	// Mando el el numero de archivos al pipe
-	//write(pipe_padre_hijo[1], num_files_char, sizeof(num_files_char) );
-	    
-    } else if (pid_hijo > 0) {
-	// Realizar tareas del hijo
-	//El mismo realizara el backup por cada archivo
-	respaldar(num_files , "foo.txt", ruta_destino);
+	fscanf(lista_archivos, "%s", num_files_char); // Aqui dos caractes el numero y \0.
+	printf("num_files_char: %s\n", num_files_char);
+	printf("num_files_int: %ld\n", strlen(num_files_char));
+	num_files = atoi(num_files_char);
+	// Mando el el numero de archivos al pipe padre-hijo
+	printf("Padre(pid= %i), Enviar mensaje a mi hijo... \n", getpid());
+	int num_bytes_escritos = write(pipe_padre_hijo[1], num_files_char, strlen(num_files_char) );
+	printf("Padre(pid=%i) numeros de bytes escritos : %d\n",getpid(), num_bytes_escritos);
 
+	// Con esto el hjo solo el numero y porque existe la posibilidad
+	// que el padre esta mas tiempo en el procesador y empiece a ejecutar todos los
+	// write escribiendolos en el buffer, entonces en el momento de leer con el hijo
+	// funcion read va a tomar todo una cadena de nombres todas juntas.
+	sleep(1);
+	
+	// 4) El padre estara en un ciclo leyendo el nombre del archivo y
+	// enviandoselo al hijo
+	int i;
+	for(i=1; i < num_files; i++) {
+	    fscanf(lista_archivos, "%s", linea);
+	    printf("Padre(pid=%d): Linea %d que le voy a mandar al hijo: %s\n",getpid(),i+1, linea);
+	    num_bytes_escritos = write(pipe_padre_hijo[1], linea, strlen(linea));
+	    //printf("Padre(pid=%d): Numeros de bytes escritos en la %d linea: %d\n", getpid(),i+1, num_bytes_escritos);
+	    sleep(1);
+	}
+	
+	// Cerramos conexiones
+	//fclose(lista_archivos);
+	//close(pipe_padre_hijo[1]); // Cierro el descriptor de escritura porque ya no lo voy ocupar.
+	//close(pipe_hijo_padre[0]); // Cierro el descriptor de lectura.                             
+	    
+    } else if (pid_hijo == 0) { // PROCESO HIJO
+	// Realizar tareas del hijo
+	close(pipe_hijo_padre[0]); // Cierro el descriptor lectura. porque va escribir.
+	close(pipe_padre_hijo[1]); //Cierro el descriptor de escritura, por que va leer(escuchar). 
+	//El mismo realizara el backup por cada archivo
+	printf("\tHijo(pid=%i) Esperando mensaje de mi padre...\n", getpid());
+
+	// Aqui le digo lee del pipe padre y tienes un maximo de 256 caracteres si es menor toma solo eso.
+	int num_bytes_leidos = read(pipe_padre_hijo[0],msg,500); // (file_descriptor, messageAlmacenar, cantMaxBytes)
+	printf("\tHijo(pid=%d), numero de bytes leidos: %d\n", getpid(), num_bytes_leidos);
+	printf("\tHijo(pid=%i), el mensaje enviado de mi padre es: %s\n", getpid(), msg);
+	num_files = atoi(msg);
+	printf("\tHijo(pid=%d), Total de archivo enviados de mi padre: %d\n", getpid(), num_files);
+	sleep(1); 
+	int i;
+	for(i = 0; i < num_files; i++) {
+	    num_bytes_leidos = read(pipe_padre_hijo[0] , msg, 500); 
+	    printf("\tHijo(pid=%d), Texto enviado de mi padre: %s\n", getpid(), msg); 
+	}
+	
+	/* num_bytes_leidos = read(pipe_padre_hijo[0] , msg, 500); */
+	/* printf("\tHijo(pid=%d), Texto2 enviado de mi padre: %s\n", getpid(), msg); */
+	
+	/* num_bytes_leidos = read(pipe_padre_hijo[0] , msg, 500); */
+	
+	/* printf("\tHijo(pid=%d), Texto3 enviado de mi padre: %s\n", getpid(), msg); */
+
+
+	//respaldar(num_files , "foo.txt", ruta_destino);
+	//Cerramos conexiones
+	//close(pipe_hijo_padre[1]); // Cierro el descriptor de escritura porque ya no lo voy ocupar.
+	//close(pipe_padre_hijo[0]); // Cierro el descriptor de lectura.
+	    
     } else {
 	// Hubo un fallo en creacion del proceso
 	perror("Hubo un error en creacion de un proceso");
@@ -194,6 +254,8 @@ void leer_rutas(char* ruta_respaldo, char* ruta_destino) {
 void crear_lista_archivos() {
     // Crea un archivo automaticamente, si ya existe lo eliminar y lo
     // vuelve a crear actualizando con los numeros valores
+    printf("Padre(pid=%d): Generando lista de archivos a respaldar (lista_archivos.txt)\n", getpid());
+    //    system("rm lista_archivos.txt");
     system("ls | wc -l > lista_archivos.txt");    
     system("ls >> lista_archivos.txt");
 }
@@ -208,7 +270,7 @@ void crear_directorio(char* ruta_destino) {
     time_t tiempo;
     char comando[1000];
     // Eliminar directorio
-    printf("Eliminando directorio si es que existe ...\n");
+    printf("Padre(pid=%d): Eliminando respaldo viejo si es que existe ...\n", getpid());
     sleep(1);
     strcpy(comando, "rm -rvf ");
     strcat(comando, ruta_destino);
@@ -225,15 +287,15 @@ void crear_directorio(char* ruta_destino) {
     strcat(comando, ruta_destino);
     time(&tiempo);
     char* fecha = ctime(&tiempo);
-    printf("Fecha: %s", fecha);    
-    //Elimina los espacios en blanco
-    for (int i = 0; i < strlen(fecha); ++i) {
-	if(fecha[i] == ' '){
-	    fecha[i] = '_';
-	}
-    }
-    //printf("Fecha: %s\n", fecha);    
-    strcat(comando, fecha);
-    printf("Comando completo: %s\n", comando);
+    /* printf("Fecha: %s", fecha);     */
+    /* //Elimina los espacios en blanco */
+    /* for (int i = 0; i < strlen(fecha); ++i) { */
+    /* 	if(fecha[i] == ' '){ */
+    /* 	    fecha[i] = '_'; */
+    /* 	} */
+    /* } */
+    /* //printf("Fecha: %s\n", fecha);     */
+    /* strcat(comando, fecha); */
+    printf("Comando completo: %s\n\n", comando);
     system(comando);    
 }

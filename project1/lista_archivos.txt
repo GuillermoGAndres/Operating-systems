@@ -1,10 +1,11 @@
-9
+10
 backup.c
 backup.out
-examen2 de Procesos backup.pdf
 lista_archivos.txt
 prueba.txt
 README.md
 README.md~
-respaldoSun_Nov_15_18:54:08_2020
-respaldoSun_Nov_15_18:58:21_2020
+respaldo
+test.c
+test.c~
+test.out

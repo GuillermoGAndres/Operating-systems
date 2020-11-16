@@ -18,6 +18,8 @@
 #include <string.h>
 
 void leer_rutas(char* ruta_respaldo, char* ruta_destino);
+void crear_directorio(char* ruta_destino);
+void crear_lista_archivos();
 void respaldar(int total_ficheros, char* nombre_fichero);
 
 
@@ -56,24 +58,15 @@ int main(int argc, char *argv[]) {
     // 1-1) Genera un archivo con la lista de los nombres de los archivos
     // del directorio a respaldar y el numero total de archivos
 
-    // Crea un archivo automaticamente, si ya existe lo eliminar y lo
-    // vuelve a crear actualizando con los numeros valores
-    system("ls > lista_archivos.txt");
-    system("ls | wc -l >> lista_archivos.txt");
-
+    crear_lista_archivos();
 
     //2) Crear directorio de respaldo, si el directorio de respaldo ya existe
     // debera de eliminarlo.
     // Hasta el momento tenemos las rutas pero no sabesmo si exiten.
-    char comando[1000] = "mkdir ";
-    strcat(comando, ruta_respaldo);
-    printf("Comando completo: %s\n", comando);
-    // Un valor cero significa que se ejecuto el comando exitosamente
-    // Un numero distinto de cero, es que algo ocurrio mal.
-    int status = system(comando);
-    printf("Status; %d\n", status);
 
-        
+    crear_directorio(ruta_destino);
+
+    
     pid_hijo = fork();
     int num_files = 5; // Numero temporal por el momento para pruebas.
     int contador = 0;
@@ -164,4 +157,52 @@ void leer_rutas(char* ruta_respaldo, char* ruta_destino) {
     }
 
 }
+/**
+ * Genera un archivo con la lista de los nombres de archivos del
+ * directorio a respaldar y el numero total de archivos.
+ */
+void crear_lista_archivos() {
+    // Crea un archivo automaticamente, si ya existe lo eliminar y lo
+    // vuelve a crear actualizando con los numeros valores
+    system("ls > lista_archivos.txt");
+    system("ls | wc -l >> lista_archivos.txt");    
+}
 
+/**
+ * Crea el directorio donde se guardaran los respaldos,
+ * si ya existe lo elimina.
+ * El nombre correpondera con la fecha actual del sistema.
+ */
+void crear_directorio(char* ruta_destino) {
+    time_t tiempo;
+    char comando[1000];
+    // Eliminar directorio
+    printf("Eliminando directorio si es que existe ...\n");
+    sleep(1);
+    strcpy(comando, "rm -rf ");
+    strcat(comando, ruta_destino);
+    printf("Comando completo: %s\n", comando);
+    // Un valor cero significa que se ejecuto el comando exitosamente
+    // Un numero distinto de cero, es que algo ocurrio mal.
+    int status = system(comando);
+    //printf("Status; %d\n", status);
+
+    // Crea directorio
+    printf("Creando un directio para su respaldo ...\n");
+    sleep(2);
+    strcpy(comando, "mkdir ");
+    strcat(comando, ruta_destino);
+    time(&tiempo);
+    char* fecha = ctime(&tiempo);
+    printf("Fecha: %s", fecha);    
+    //Elimina los espacios en blanco
+    for (int i = 0; i < strlen(fecha); ++i) {
+	if(fecha[i] == ' '){
+	    fecha[i] = '_';
+	}
+    }
+    //printf("Fecha: %s\n", fecha);    
+    strcat(comando, fecha);
+    printf("Comando completo: %s\n", comando);
+    system(comando);    
+}

@@ -4,7 +4,7 @@
 ~~~
 ./backup directorio_respadar directorio_destino
 ~~~
-Las entradas (rutas relativas o absoluta) pueden ser:
+Las entradas pueden ser por:
 * Entrada estandar (teclado)
 * Por parametros 
 * Por un archivo
@@ -20,6 +20,7 @@ myFIle.txt
 /home/user/Documents/DirectorioRespaldo
 /home/user/Documents/DirectorioDestino
 ~~~
+Las rutas puede ser relativas o absolutas.
 
 ## Compilacion
 ~~~

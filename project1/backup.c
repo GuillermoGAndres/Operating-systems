@@ -3,7 +3,9 @@
    Realiza un respaldo periodico de un directorio a traves de crear 
    un proceso hijo que realice esa tarea, comunicacion entre padre e hijo
    sera implmentada con pipes.
-   @author Andres Urbano Guillermo Gerardo.                                   
+   @author 
+   Andres Urbano Guillermo Gerardo.                                   
+   Guadarrama Ortega Cesar Alejandro.
    Datos de entrada:
    -El directorio a respaldar 
    -Directorio donde se almacenará el respaldo
@@ -20,7 +22,7 @@
 void leer_rutas(char* ruta_respaldo, char* ruta_destino);
 void crear_directorio(char* ruta_destino);
 void crear_lista_archivos(char* ruta_respaldo);
-void respaldar(char* fichero, char* des);
+void respaldar(char* nombre_fichero, char* ruta_respaldo, char* ruta_destino);
 
 
 int main(int argc, char *argv[]) {
@@ -107,13 +109,13 @@ int main(int argc, char *argv[]) {
 	}
 	
 	fscanf(lista_archivos, "%s", num_files_char); // Aqui dos caractes el numero y \0.
-	printf("num_files_char: %s\n", num_files_char);
-	printf("num_files_int: %ld\n", strlen(num_files_char));
+	//printf("num_files_char: %s\n", num_files_char);
+	//printf("num_files_int: %ld\n", strlen(num_files_char));
 	num_files = atoi(num_files_char);
 	// Mando el el numero de archivos al pipe padre-hijo
-	printf("Padre(pid= %i), Enviar mensaje a mi hijo... \n", getpid());
+	printf("Padre(pid= %i), Enviar mensaje a mi hijo de hacer un respaldo... \n", getpid());
 	int num_bytes_escritos = write(pipe_padre_hijo[1], num_files_char, strlen(num_files_char) );
-	printf("Padre(pid=%i) numeros de bytes escritos : %d\n",getpid(), num_bytes_escritos);
+	//printf("Padre(pid=%i) numeros de bytes escritos : %d\n",getpid(), num_bytes_escritos);
 
 	// Con esto el hjo solo el numero y porque existe la posibilidad
 	// que el padre esta mas tiempo en el procesador y empiece a ejecutar todos los
@@ -131,11 +133,29 @@ int main(int argc, char *argv[]) {
 	    //printf("entrar al write\n");
 	    num_bytes_escritos = write(pipe_padre_hijo[1], linea, strlen(linea) + 1);
 	    //printf("Padre(pid=%d): Numeros de bytes escritos en la %d linea: %d\n", getpid(),i+1, num_bytes_escritos);
-	    sleep(3);
+	    sleep(2);
 	    //printf("Salir write\n");
 	    
 	}
 	printf("Salio del for\n");
+	// Eschucar la respuesta del hijo para concoer si ya termino y con cuantos archivos.
+	/* read(pipe_hijo_padre[0], msg , 500); */
+	/* printf("Padre(pid=%d): Mensaje de mi hijo: %s\n", getpid(), msg); */
+	// Leer el numero de respaldados
+	//sleep(2); //Esperas para que el hijo te mande el total, sino vovera a leer lo que estaba en el buffer.
+	int num;
+	read(pipe_hijo_padre[0], &num , sizeof(num));
+	printf("Padre(pid=%d): Recibi por el hijo un TOTAL de %d archivos respaldados con exito\n", getpid(), num);
+	/* read(pipe_hijo_padre[0], msg , 500); */
+	/* printf("Padre(pid=%d): Recibi el TOTAL de %s archivos respaldados con exito\n", getpid(), msg); */
+
+	
+	//Imprimir el listado de directorios de respaldo.
+	char command[1000] = "ls -l ";
+	strcat(command, ruta_destino);
+	system(command);
+	printf("%d\t ARCHIVOS RESPALDADOS\n", num);
+	printf("\n-----Termino proceso padre (pid=%d)-----\n", getpid());
 	
 	// Cerramos conexiones
 	fclose(lista_archivos);
@@ -151,7 +171,7 @@ int main(int argc, char *argv[]) {
 
 	// Aqui le digo lee del pipe padre y tienes un maximo de 256 caracteres si es menor toma solo eso.
 	int num_bytes_leidos = read(pipe_padre_hijo[0],msg,500); // (file_descriptor, messageAlmacenar, cantMaxBytes) */
-	printf("\tHijo(pid=%d), numero de bytes leidos: %d\n", getpid(), num_bytes_leidos);
+	//printf("\tHijo(pid=%d), numero de bytes leidos: %d\n", getpid(), num_bytes_leidos);
 	printf("\tHijo(pid=%i), el mensaje enviado de mi padre es: %s\n", getpid(), msg);
 	num_files = atoi(msg);
 	printf("\tHijo(pid=%d), Total de archivo enviados de mi padre: %d\n", getpid(), num_files);
@@ -160,17 +180,21 @@ int main(int argc, char *argv[]) {
 	for(i = 0; i < num_files; i++) {
 	    num_bytes_leidos = read(pipe_padre_hijo[0] , msg, 500);
 	    printf("\tHijo(pid=%d), Texto enviado de mi padre: %s\n", getpid(), msg);
-	    printf("\nHijo(pid=%i), respaldando el archivo %s        pendientes %d\n", getpid(), msg, num_files-i); //contador decendente de numero de archivos
-	    respaldar(msg,ruta_destino); // funcion de respaldar para hacer el backup al nuevo respaldo
+	    printf("\tHijo(pid=%i), respaldando el archivo %s ................ pendientes %d\n", getpid(), msg, num_files-i); //contador decendente de numero de archivos
+	    respaldar(msg,ruta_respaldo, ruta_destino); // funcion de respaldar para hacer el backup al nuevo respaldo
 	}
-	
-	/* num_bytes_leidos = read(pipe_padre_hijo[0] , msg, 500); */
-	/* printf("\tHijo(pid=%d), Texto2 enviado de mi padre: %s\n", getpid(), msg); */
-	
-	/* num_bytes_leidos = read(pipe_padre_hijo[0] , msg, 500); */
-	
-	/* printf("\tHijo(pid=%d), Texto3 enviado de mi padre: %s\n", getpid(), msg); */
 
+	// Mandar mensaje al padre que termino y numeros respaldados;
+	write(pipe_hijo_padre[1], &num_files, sizeof(num_files));
+	
+	//char msg_terminado[1000] = "Padre ya termine de respaldar los archivos";
+	//write(pipe_hijo_padre[1], msg_terminado, strlen(msg_terminado)+1);
+	//sleep(1); // Me espero un rato para que lea el mensaje y lo digiera.
+	//char otraFrase[1000] = "Hola mundo";
+	//write(pipe_hijo_padre[1], otraFrase, strlen(otraFrase)+1);
+
+	//Mandar mensaje que termino.
+	printf("\n------Termina proceso hijo(pid=%d)--------\n", getpid());
 
 	//respaldar(num_files,msg,ruta_destino,ruta_respaldo);
 	//Cerramos conexiones
@@ -193,14 +217,28 @@ int main(int argc, char *argv[]) {
  * Como final regresa una operacion al sistema con el comando completo
  * con su formato arrglos de caracteres pero no valida si existen esas rutas.
  */
-void respaldar(char* fichero, char* des) {
-    printf("Fichero: %s\n", fichero); //verificamos el nombre del archivo
-    printf("Destino: %s\n", des); // verificamos el destino del archivo
-    char comando[1000];  // variable para almacenar toda la cadena
-    char* aux = fichero; // variable aux para no perder el fichero por parte del hijo
-    char* destino = des; // varible destino para no perder la referencia
-    sprintf(comando,"cp %s %s",aux,des); //concatenacion de las cadenas para hacer el comando dejando espacios
-    printf("Comando completo: %s",comando); //imprimimos el comando completo
+void respaldar(char* nombre_fichero, char* ruta_respaldo, char* ruta_destino) {
+    printf("Fichero: %s\n", nombre_fichero); //verificamos el nombre del archivo
+    printf("Destino: %s\n", ruta_destino); // verificamos el destino del archivo
+    char comando[1000] = "cp ";  // variable para almacenar toda la cadena
+
+    //Comando a ejecutar
+    // cp /home/directorioRespaldo/fichero.c  /home/ditectorioDestino/
+    strcat(comando, ruta_respaldo);
+    //Capturando posible error si no se coloca como ultimo caracter / para directorio respaldo.
+    // printf("Ultimo caracter ruta_respaldo %c\n", ruta_respaldo[strlen(ruta_respaldo) - 1]);
+    if(ruta_respaldo[strlen(ruta_respaldo) - 1] != '/'){
+	//Le ponemos ese caracter nosotros.
+	strcat(comando, "/");
+    }
+    strcat(comando, nombre_fichero);
+    strcat(comando, " ");
+    strcat(comando, ruta_destino);
+    
+    /* char* aux = nombre_fichero; // variable aux para no perder el fichero por parte del hijo */
+    /* char* destino = ruta_destino; // varible destino para no perder la referencia */
+    /* sprintf(comando,"cp %s %s",aux,ruta_destino); //concatenacion de las cadenas para hacer el comando dejando espacios */
+    printf("Comando completo copiar directorio: %s\n",comando); //imprimimos el comando completo
     int status = system(comando); //llamada al system
 }
 

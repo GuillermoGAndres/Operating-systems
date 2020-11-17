@@ -119,18 +119,23 @@ int main(int argc, char *argv[]) {
 	// que el padre esta mas tiempo en el procesador y empiece a ejecutar todos los
 	// write escribiendolos en el buffer, entonces en el momento de leer con el hijo
 	// funcion read va a tomar todo una cadena de nombres todas juntas.
-	sleep(1);
+	sleep(2);
 	
 	// 4) El padre estara en un ciclo leyendo el nombre del archivo y
 	// enviandoselo al hijo
 	int i;
-	for(i=1; i < num_files; i++) {
+	printf("Va entrar al for\n");
+	for(i=0; i < num_files; i++) {
 	    fscanf(lista_archivos, "%s", linea);
 	    printf("Padre(pid=%d): Linea %d que le voy a mandar al hijo: %s\n",getpid(),i+1, linea);
-	    num_bytes_escritos = write(pipe_padre_hijo[1], linea, strlen(linea));
+	    //printf("entrar al write\n");
+	    num_bytes_escritos = write(pipe_padre_hijo[1], linea, strlen(linea) + 1);
 	    //printf("Padre(pid=%d): Numeros de bytes escritos en la %d linea: %d\n", getpid(),i+1, num_bytes_escritos);
-	    sleep(1);
+	    sleep(3);
+	    //printf("Salir write\n");
+	    
 	}
+	printf("Salio del for\n");
 	
 	// Cerramos conexiones
 	//fclose(lista_archivos);
@@ -145,16 +150,16 @@ int main(int argc, char *argv[]) {
 	printf("\tHijo(pid=%i) Esperando mensaje de mi padre...\n", getpid());
 
 	// Aqui le digo lee del pipe padre y tienes un maximo de 256 caracteres si es menor toma solo eso.
-	int num_bytes_leidos = read(pipe_padre_hijo[0],msg,500); // (file_descriptor, messageAlmacenar, cantMaxBytes)
+	 int num_bytes_leidos = read(pipe_padre_hijo[0],msg,500); // (file_descriptor, messageAlmacenar, cantMaxBytes) */
 	printf("\tHijo(pid=%d), numero de bytes leidos: %d\n", getpid(), num_bytes_leidos);
 	printf("\tHijo(pid=%i), el mensaje enviado de mi padre es: %s\n", getpid(), msg);
 	num_files = atoi(msg);
 	printf("\tHijo(pid=%d), Total de archivo enviados de mi padre: %d\n", getpid(), num_files);
-	sleep(1); 
+	sleep(1);
 	int i;
 	for(i = 0; i < num_files; i++) {
-	    num_bytes_leidos = read(pipe_padre_hijo[0] , msg, 500); 
-	    printf("\tHijo(pid=%d), Texto enviado de mi padre: %s\n", getpid(), msg); 
+	    num_bytes_leidos = read(pipe_padre_hijo[0] , msg, 500);
+	    printf("\tHijo(pid=%d), Texto enviado de mi padre: %s\n", getpid(), msg);
 	}
 	
 	/* num_bytes_leidos = read(pipe_padre_hijo[0] , msg, 500); */

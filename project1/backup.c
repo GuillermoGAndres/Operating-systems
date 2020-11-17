@@ -20,7 +20,7 @@
 void leer_rutas(char* ruta_respaldo, char* ruta_destino);
 void crear_directorio(char* ruta_destino);
 void crear_lista_archivos(char* ruta_respaldo);
-void respaldar(int total_ficheros, char* nombre_fichero, char* ruta_destino);
+void respaldar(char* fichero, char* des);
 
 
 int main(int argc, char *argv[]) {
@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
 	printf("Va entrar al for\n");
 	for(i=0; i < num_files; i++) {
 	    fscanf(lista_archivos, "%s", linea);
-	    printf("Padre(pid=%d): Linea %d le voy a mandar al hijo: %s\n",getpid(),i+1, linea);
+	    printf("Padre(pid=%d): Linea %d que le voy a mandar al hijo: %s\n",getpid(),i+1, linea);
 	    //printf("entrar al write\n");
 	    num_bytes_escritos = write(pipe_padre_hijo[1], linea, strlen(linea) + 1);
 	    //printf("Padre(pid=%d): Numeros de bytes escritos en la %d linea: %d\n", getpid(),i+1, num_bytes_escritos);
@@ -150,7 +150,7 @@ int main(int argc, char *argv[]) {
 	printf("\tHijo(pid=%i) Esperando mensaje de mi padre...\n", getpid());
 
 	// Aqui le digo lee del pipe padre y tienes un maximo de 256 caracteres si es menor toma solo eso.
-	 int num_bytes_leidos = read(pipe_padre_hijo[0],msg,500); // (file_descriptor, messageAlmacenar, cantMaxBytes) */
+	int num_bytes_leidos = read(pipe_padre_hijo[0],msg,500); // (file_descriptor, messageAlmacenar, cantMaxBytes) */
 	printf("\tHijo(pid=%d), numero de bytes leidos: %d\n", getpid(), num_bytes_leidos);
 	printf("\tHijo(pid=%i), el mensaje enviado de mi padre es: %s\n", getpid(), msg);
 	num_files = atoi(msg);
@@ -160,6 +160,8 @@ int main(int argc, char *argv[]) {
 	for(i = 0; i < num_files; i++) {
 	    num_bytes_leidos = read(pipe_padre_hijo[0] , msg, 500);
 	    printf("\tHijo(pid=%d), Texto enviado de mi padre: %s\n", getpid(), msg);
+	    printf("\nHijo(pid=%i), respaldando el archivo %s        pendientes %d\n", getpid(), msg, num_files-i); //contador decendente de numero de archivos
+	    respaldar(msg,ruta_destino); // funcion de respaldar para hacer el backup al nuevo respaldo
 	}
 	
 	/* num_bytes_leidos = read(pipe_padre_hijo[0] , msg, 500); */
@@ -170,7 +172,7 @@ int main(int argc, char *argv[]) {
 	/* printf("\tHijo(pid=%d), Texto3 enviado de mi padre: %s\n", getpid(), msg); */
 
 
-	//respaldar(num_files , "foo.txt", ruta_destino);
+	//respaldar(num_files,msg,ruta_destino,ruta_respaldo);
 	//Cerramos conexiones
 	close(pipe_hijo_padre[1]); // Cierro el descriptor de escritura porque ya no lo voy ocupar.
 	close(pipe_padre_hijo[0]); // Cierro el descriptor de lectura.
@@ -185,10 +187,21 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-void respaldar(int total_ficheros, char* nombre_fichero, char* ruta_destino) {
-    printf("total : %d\n", total_ficheros);
-    printf("Fichero: %s\n", nombre_fichero);
-    
+/**
+ * El hijo que resibio la lista de archivos se la asignamos al parametro fichero 
+ * Ya tenemos la ruta del directorio deseado para el respaldo y lo asignamos al parametro des
+ * Como final regresa una operacion al sistema con el comando completo
+ * con su formato arrglos de caracteres pero no valida si existen esas rutas.
+ */
+void respaldar(char* fichero, char* des) {
+    printf("Fichero: %s\n", fichero); //verificamos el nombre del archivo
+    printf("Destino: %s\n", des); // verificamos el destino del archivo
+    char comando[1000];  // variable para almacenar toda la cadena
+    char* aux = fichero; // variable aux para no perder el fichero por parte del hijo
+    char* destino = des; // varible destino para no perder la referencia
+    sprintf(comando,"cp %s %s",aux,des); //concatenacion de las cadenas para hacer el comando dejando espacios
+    printf("Comando completo: %s",comando); //imprimimos el comando completo
+    int status = system(comando); //llamada al system
 }
 
 

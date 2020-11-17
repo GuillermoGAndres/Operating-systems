@@ -1,8 +1,5 @@
-7
-6-2.png
-6.png
-7B.png
-8-2.png
-8.png
-9-2.png
-9.png
+4
+lista_archivos.txt
+prueba.txt
+README.md
+test.c

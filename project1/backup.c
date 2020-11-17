@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
 	printf("Va entrar al for\n");
 	for(i=0; i < num_files; i++) {
 	    fscanf(lista_archivos, "%s", linea);
-	    printf("Padre(pid=%d): Linea %d que le voy a mandar al hijo: %s\n",getpid(),i+1, linea);
+	    printf("Padre(pid=%d): Linea %d le voy a mandar al hijo: %s\n",getpid(),i+1, linea);
 	    //printf("entrar al write\n");
 	    num_bytes_escritos = write(pipe_padre_hijo[1], linea, strlen(linea) + 1);
 	    //printf("Padre(pid=%d): Numeros de bytes escritos en la %d linea: %d\n", getpid(),i+1, num_bytes_escritos);

@@ -1,5 +1,7 @@
 # Backups 
 
+![demostracion](./img/demostracion.gif)
+
 ## Usage
 ~~~
 ./backup directorio_respadar directorio_destino

@@ -19,7 +19,7 @@
 
 void leer_rutas(char* ruta_respaldo, char* ruta_destino);
 void crear_directorio(char* ruta_destino);
-void crear_lista_archivos();
+void crear_lista_archivos(char* ruta_respaldo);
 void respaldar(int total_ficheros, char* nombre_fichero, char* ruta_destino);
 
 
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
     // 1-1) Genera un archivo con la lista de los nombres de los archivos
     // del directorio a respaldar y el numero total de archivos
 
-    crear_lista_archivos();
+    crear_lista_archivos(ruta_respaldo);
 
     //2) Crear directorio de respaldo, si el directorio de respaldo ya existe
     // debera de eliminarlo.
@@ -138,9 +138,9 @@ int main(int argc, char *argv[]) {
 	printf("Salio del for\n");
 	
 	// Cerramos conexiones
-	//fclose(lista_archivos);
-	//close(pipe_padre_hijo[1]); // Cierro el descriptor de escritura porque ya no lo voy ocupar.
-	//close(pipe_hijo_padre[0]); // Cierro el descriptor de lectura.                             
+	fclose(lista_archivos);
+	close(pipe_padre_hijo[1]); // Cierro el descriptor de escritura porque ya no lo voy ocupar.
+	close(pipe_hijo_padre[0]); // Cierro el descriptor de lectura.                             
 	    
     } else if (pid_hijo == 0) { // PROCESO HIJO
 	// Realizar tareas del hijo
@@ -172,8 +172,8 @@ int main(int argc, char *argv[]) {
 
 	//respaldar(num_files , "foo.txt", ruta_destino);
 	//Cerramos conexiones
-	//close(pipe_hijo_padre[1]); // Cierro el descriptor de escritura porque ya no lo voy ocupar.
-	//close(pipe_padre_hijo[0]); // Cierro el descriptor de lectura.
+	close(pipe_hijo_padre[1]); // Cierro el descriptor de escritura porque ya no lo voy ocupar.
+	close(pipe_padre_hijo[0]); // Cierro el descriptor de lectura.
 	    
     } else {
 	// Hubo un fallo en creacion del proceso
@@ -256,13 +256,19 @@ void leer_rutas(char* ruta_respaldo, char* ruta_destino) {
  * Genera un archivo con la lista de los nombres de archivos del
  * directorio a respaldar y el numero total de archivos.
  */
-void crear_lista_archivos() {
+void crear_lista_archivos(char* ruta_respaldo) {
     // Crea un archivo automaticamente, si ya existe lo eliminar y lo
     // vuelve a crear actualizando con los numeros valores
     printf("Padre(pid=%d): Generando lista de archivos a respaldar (lista_archivos.txt)\n", getpid());
     //    system("rm lista_archivos.txt");
-    system("ls | wc -l > lista_archivos.txt");    
-    system("ls >> lista_archivos.txt");
+    char comandoCompleto[1000] = "ls ";
+    char comandoAux[1000] = "";
+    strcat(comandoCompleto, ruta_respaldo);
+    char *ads = strcat(comandoAux, comandoCompleto);
+    printf("Comando completo: %s\n", ads );
+    system(strcat(comandoAux," | wc -l > lista_archivos.txt"));
+    //strcat(comandoAux, comandoCompleto);
+    system(strcat(comandoCompleto," >> lista_archivos.txt"));
 }
 
 

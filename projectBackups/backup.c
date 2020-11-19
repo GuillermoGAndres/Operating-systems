@@ -5,7 +5,6 @@
    sera implmentada con pipes.
    @author 
    Andres Urbano Guillermo Gerardo.                                   
-   Guadarrama Ortega Cesar Alejandro.
 
    Datos de entrada:
    -El directorio a respaldar 
@@ -192,7 +191,7 @@ int main(int argc, char *argv[]) {
 void respaldar(char* nombre_fichero, char* ruta_respaldo, char* ruta_destino) {
     //printf("\tFichero: %s\n", nombre_fichero); //verificamos el nombre del archivo
     //printf("\tDestino: %s\n", ruta_destino); // verificamos el destino del archivo
-    char comando[1000] = "cp ";  // variable para almacenar toda la cadena
+    char comando[1000] = "cp -r ";  // variable para almacenar toda la cadena
 
     //Comando a ejecutar
     // cp /home/directorioRespaldo/fichero.c  /home/ditectorioDestino/

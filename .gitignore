@@ -2,6 +2,5 @@
 *.*~
 #Execute for Linux
 *.out
-
-flymd.html
-flymd.md
+# ---
+*.mp4

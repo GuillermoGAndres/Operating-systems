@@ -1,7 +1,0 @@
-6
-hola.c
-hola_mundo.cpp
-HolaMundo.java
-hola_mundo.py
-index.html
-styles.css

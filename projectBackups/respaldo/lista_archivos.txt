@@ -1,0 +1,12 @@
+11
+backup.c
+backup.out
+directorios-por-ficheros.txt
+img
+lista_archivos.txt
+prueba
+README.md
+README.md~
+test.c
+test.c~
+test.out

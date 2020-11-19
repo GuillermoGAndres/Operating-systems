@@ -6,32 +6,67 @@
 2.- Planificación SJF  Shortest-Job-First
 Shortest-Job-First, “primero al proceso con ráfaga más corta”.
 
-3.- Planificación por prioridad
-Numero 10 -propioridas mas alta
-Numero 1 - prioridad baja
+3.- Planificación por prioridad (Numero 10 propioridad mas alta, numero 1 prioridad baja)
 
 4.- Planificación Round Robin (RR)
 A cada proceso se le asocia un quantum de tiempo de CPU.
 
---------------------------------------
+----------------------------------------------
 * Cooperativo
-Que si esta un proceso de tamaño 4 ejecutandose en la CPU y llega uno de tamaño 1 entonces
-no lo va apropiar, se va formar al inicio de la lista.
-No va apropiar el procesador.
+
+Si esta un proceso de tamaño 4 ejecutandose en la CPU y llega uno de tamaño 1 entonces no lo va apropiar, se va formar al inicio de la cola. No se va apropiar el procesador.
+
 * Apropiativo
-Que si esta en ejecucion un proceso y llego uno más chico le quita
-al procesador
-Apropia el procesador
+
+Si esta en ejecucion un proceso y llega uno con una prioridad más alta, le quita
+al procesador y se apropia del procesador.
 
 ------------------------------------------------
 # Operaciones
-Tespera = Tsubio + Tllego + Tlleva ejecutandose
-Tejecucion = Ttermino - Tllego
-Trespuesta = Tsubio por primera vez - Tllego
+Tiempo de espera = Tsubio + Tllego + Tlleva ejecutandose.
+
+Tiempo de ejecucion = Ttermino - Tllego.
+
+Tiempo de respuesta = Tsubio por primera vez - Tllego.
+
 
 -------------------------------------
 
 # Process 
+Los procesos creados con la llamada fork son denominados como **procesos pesados**,
+estos procesos son programas *completos* e *independientes* con sus propias **variables, stack y memoria reservada**, lo unico que se comparte con el proceso original es el *codigo*.
+
+![process 1](./img/estructura_proceso.png)
+
+Un proceso es mas que un codigo de un programa, un proceso incluye una **seccion de codigo, contador de programa, stack, section de datos y  un heap** que es donde se encontrara la memoria que se creara dinamicamente. Un *programa* llega a ser un proceso cuando el archivo ejecutable es **cargado en la memoria principal**, en se preciso momento se convierte en un **proceso**.
+
+## Estados de un procesos
+Un proceso en ejecucion pasa por varios estados:
+
+* __New__. El proceso es creado.
+* __Running__. Las instrucciones estan siendo ejecutadas.
+* __Waiting__. El proceso esta en espera de un evento(Tal como entrada o salida estandar).
+* __Ready__. El proceso esta esperando para ser ejecutado por el procesador.
+* __Terminated__. El proceso ha acabado su ejecucion.
+![Estados de un proceso](./img/estados_proceso.png)
+
+## Bloque de control de procesos
+Cada procesos es representado por el sistema operativo como un **bloque de control de proceso**, el cual esta definido como una estructura de datos que contiene toda la informacion del proceso, por cada proceso el sistema operativo lo representa de esta forma.
+
+![Bloque de control de procesos](./img/bloque_control_procesos.png)
+
+Cuando creamos un nuevo proceso con fork, creamos una nueva secuencia que se ejecuta *concurrentemente* con el proceso padre, pero no comparte las zonas de los datos y la comunicacion entre ellos es muy limitada. Por ello aparecen los **pipes** y los otros mecanismos de comunicacion entre procesos.
+
+![Cola de procesos](./img/cola_procesos.png)
+
+Para que cada proceso sea ejecutado por el procesador, primero se organizar la cantidad de procesos que llegan utilizando difentes tipos de colas para cada estado, nuestro procesos se van formando uno tras otro y dependiendo de nuestro despachador o planificador de corto plazon eligira que proceso debe entrar para ejecutarse. 
+
+![Diagrama de cola](./img/cola_diagrama.png)
+
+Como son miles de procesos que quieren entrar a ejecucion y ademas de que algunos requeriran dispositivos de entrada/salida, es natural que cada proceso vaya formandose en nueva cola para cada tarea en particular.
+
+## Creacion de procesos
+
 ![Ejercicio 6](./img/6.png)
 ![code6](./img/6-2.png)
 

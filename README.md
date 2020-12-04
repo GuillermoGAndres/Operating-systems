@@ -29,10 +29,14 @@ Tiempo de ejecucion = Ttermino - Tllego.
 
 Tiempo de respuesta = Tsubio por primera vez - Tllego.
 
-
 -------------------------------------
+## Projects
 
-# Process 
+
+---
+## Theory
+
+## Process 
 Los procesos creados con la llamada fork son denominados como **procesos pesados**,
 estos procesos son programas *completos* e *independientes* con sus propias **variables, stack y memoria reservada**, lo unico que se comparte con el proceso original es el *codigo*.
 

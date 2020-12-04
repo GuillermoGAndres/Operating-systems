@@ -1,4 +1,4 @@
-
+package exe1;
 
 public class MyThread extends Thread {
 

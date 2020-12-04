@@ -57,17 +57,33 @@ public class LinkedQueue<T> implements Queue <T> {
 		return count;
 	}
 
-	// Devuelve una representacion de la cola
+	// // Devuelve una representacion de la cola
+	// public String toString() {
+	// 	int i = count;
+	// 	Node<T> iterador = front;
+	// 	String aux = "";
+	// 	while( i  > 0) {
+	// 		aux += "| " + iterador.getElement() + " | ";
+	// 		iterador = iterador.getNext();
+	// 		i--;
+	// 	}
+	// 	return aux;
+	// }
+
+    // Devuelve una representacion de la cola
 	public String toString() {
 		int i = count;
 		Node<T> iterador = front;
-		String aux = "";
+		String elem = "", frente="";
 		while( i  > 0) {
-			aux += "| " + iterador.getElement() + " | ";
+     
+			elem = "| " + iterador.getElement() + " | ";
+            frente = elem + frente;
+                        
 			iterador = iterador.getNext();
 			i--;
 		}
-		return aux;
+		return frente;
 	}
 
 	

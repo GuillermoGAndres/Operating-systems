@@ -17,10 +17,11 @@ public class Main {
 
         String pathFile = "inputTest.txt";       
  		Proceso[] tablaProcesos = leerEntradasPorFichero(pathFile,4);        
+        System.out.println("Tabla de procesos");
         System.out.println(Arrays.toString(tablaProcesos));         
-        System.out.println("-----ordenado");        
         ordenarTabla(tablaProcesos);
-        System.out.println(Arrays.toString(tablaProcesos));
+        //System.out.println(Arrays.toString(tablaProcesos));
+        System.out.println("");
         
         // Una vez obtenidos los datos iniciaresmos con la simulacion
         planificador.iniciarSimulacion(tablaProcesos);
@@ -30,8 +31,9 @@ public class Main {
 
     
 
+    
     /**
-     * Metodo auxiliar para testear los datos de entrada de muchos proceso en un archivo
+     * Metodo auxiliar para testear los datos de entrada de muchos procesos en un archivo
      * llamado inputTest.txt
      */
     public static Proceso[] leerEntradasPorFichero(String path, int numProcesos) {
@@ -50,7 +52,7 @@ public class Main {
             String linea = br.readLine();
             linea = br.readLine();
             while( linea != null) {
-                System.out.println(linea);
+                //System.out.println(linea);
                 StringTokenizer token = new StringTokenizer(linea, ",");
                 // Como yo se cuantos datos hay en el cvs, puedo hacer esto sin provar una exepcion
                 // https://es.stackoverflow.com/questions/38085/leer-fichero-formato-csv-en-java

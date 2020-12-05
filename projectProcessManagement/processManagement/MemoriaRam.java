@@ -14,7 +14,7 @@ public class MemoriaRam {
     }
 
     
-    public Proceso borrarProceso() {
+    public Proceso sacarProceso() {
         Proceso elem = null;
         try {
             elem = colaProcesosEjecucion.dequeue();
@@ -22,6 +22,10 @@ public class MemoriaRam {
         return elem;
     }
 
+    /**
+     * Se refieren a la disponibilidad de memoria RAM.
+     *
+     */
     public boolean estaDispoble() {
         return getTamanio() >= 0;
     }
@@ -31,6 +35,10 @@ public class MemoriaRam {
     }
     public void setTamanio(int tamanio) {
         this.tamanio = tamanio;
+    }
+
+    public boolean tieneProcesosCargados() {
+        return colaProcesosEjecucion.size() != 0;
     }
 
     public String toString() {

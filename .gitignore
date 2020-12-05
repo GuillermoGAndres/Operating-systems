@@ -4,3 +4,6 @@
 *.out
 # ---
 *.mp4
+# Class
+*.class
+

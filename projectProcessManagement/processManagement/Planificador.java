@@ -21,6 +21,7 @@ public class Planificador {
             System.out.printf("Tiempo: %d\n", reloj.getTiempo());            
             // Como se que la tabla de procesos ya esta ordena, los posteriores elementos
             // tendran un numero mayor de tiempo de llegada
+
             if(i.get() < tablaProcesos.length && reloj.getTiempo() == tablaProcesos[i.get()].getTiempoLLegadaProceso()) {
                 agregarColaProcesosListo(tablaProcesos[i.get()]);
                 int tmp = i.get() + 1;
@@ -35,6 +36,7 @@ public class Planificador {
             
             // Verificamos que exista tamaño en la memoria, que existe tambien proceoso en cola de espera
             // y que tambien exista espacio adecuado para el proceoso.
+            // Planificador de mediano plazo
             if ( memoriaRam.estaDispoble() && !colaProcesosListos.isEmpty() && (memoriaRam.getTamanio() - colaProcesosListos.first().getTamanio()) >= 0 ) {
                 proceso = null;
                 try{
@@ -52,13 +54,18 @@ public class Planificador {
                 System.out.printf("Espacio restante RAM: %dKB\n", memoriaRam.getTamanio());
                 proceso = null;
             }
-
+            
+            // Planificador de corto plazo
             if (cpu.estaDispoble() && memoriaRam.tieneProcesosCargados()) {
                 proceso = null;
                 proceso = memoriaRam.sacarProceso();
                 System.out.printf("Subio el proceso %s a la CPU\n", proceso.getNombre());
+                // Si se ejecuta un proceso significa que libero espacio en la memoria ram, y por la tanto recupero el espacio ocupado por el proceso.
+                
                 System.out.println("---Insertando a la CPU---");
-                cpu.ejecutar(proceso, reloj, tablaProcesos, i, colaProcesosListos);
+                cpu.ejecutar(proceso, reloj, tablaProcesos, i, colaProcesosListos, memoriaRam);
+                // Baja de la CPU
+                System.out.printf("Bajando de la CPU el proceso %s...\n", proceso.getNombre());
                 if(proceso.getTiempoRequeridoEjecucion() > 0) {
                     bajoProcesoCPU = true;
                 } else {

@@ -44,8 +44,8 @@ public class Procesador {
             // System.out.println(indice.get() < tablaProcesos.length && reloj.getTiempo() == tablaProcesos[indice.get()].getTiempoLLegadaProceso());
             if(indice.get() < tablaProcesos.length && reloj.getTiempo() == tablaProcesos[indice.get()].getTiempoLLegadaProceso()) {
                 System.out.println("Insertando a la cola procesos listos ...");
-                System.out.println("Entro********");
-                System.out.println("Valor de indice: " + indice);
+                //System.out.println("Entro********");
+                //System.out.println("Valor de indice: " + indice);
                 dormirProcesador(2000);
                 colaProcesosListos.enqueue(tablaProcesos[indice.get()]);
                 System.out.println(colaProcesosListos);

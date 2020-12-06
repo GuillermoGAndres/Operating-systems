@@ -42,7 +42,7 @@ public class Planificador {
                 try{
                     proceso = colaProcesosListos.dequeue();
                 } catch (EmptyCollectionException e) {}
-                System.out.printf("Subio el proceso %s a la memoria\n", proceso.getNombre());
+                System.out.printf("***Subio el proceso %s a la memoria***\n", proceso.getNombre());
                 System.out.println("***Insertando en la memoria RAM***");
                 dormir();
                 //System.out.println("Ram tamanio " + memoriaRam.getTamanio());
@@ -61,7 +61,8 @@ public class Planificador {
                 proceso = memoriaRam.sacarProceso();
                 System.out.printf("Subio el proceso %s a la CPU\n", proceso.getNombre());
                 // Si se ejecuta un proceso significa que libero espacio en la memoria ram, y por la tanto recupero el espacio ocupado por el proceso.
-                
+                memoriaRam.setTamanio(memoriaRam.getTamanio() + proceso.getTamanio());
+                System.out.printf("Actualizando espacio disponible en la memoria RAM: %dKB\n", memoriaRam.getTamanio());
                 System.out.println("---Insertando a la CPU---");
                 cpu.ejecutar(proceso, reloj, tablaProcesos, i, colaProcesosListos, memoriaRam);
                 // Baja de la CPU
@@ -82,9 +83,14 @@ public class Planificador {
                 } catch (InterruptedException e){}
                 int t = reloj.getTiempo() + 1;
                 reloj.setTiempo(t);
+                // Como sabemos que existiran procesos la cpu siempre esta trabando,
+                // en el momento que ya no esta trabanjo significa que fue el ultimo proceoso ejecutar.
+                break;
             }
             
         }
+
+        System.out.println("Termino la simulacion");
         
 	}
 

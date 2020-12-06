@@ -23,7 +23,7 @@ al procesador y se apropia del procesador.
 
 ------------------------------------------------
 # Operaciones
-Tiempo de espera = Tsubio + Tllego + Tlleva ejecutandose.
+Tiempo de espera = Tsubio - Tllego - Tlleva ejecutandose.
 
 Tiempo de ejecucion = Ttermino - Tllego.
 

@@ -9,6 +9,13 @@ public class Proceso{
 	private int tiempoRequeridoEjecucion;	
 	private int tiempoLLegadaProceso;
 
+    private boolean subioPorPrimeraVez;
+    private int tiempoQueSubioPorPrimeraVez;
+    private int tiempoQueSeEstuvoEjecutando;
+    private int tiempoQueTermino;
+    private int tiempoQueSubioAntesTerminar;
+    
+
 	public Proceso() {}
     
 	public Proceso(String idProceso, String nombre, int prioridad, int tamanio, int tiempoRequeridoEjecucion, int tiempoLLegadaProceso) {
@@ -18,6 +25,12 @@ public class Proceso{
         this.prioridad = prioridad;
 		this.tiempoRequeridoEjecucion = tiempoRequeridoEjecucion;
 		this.tiempoLLegadaProceso = tiempoLLegadaProceso;
+        this.subioPorPrimeraVez = false;
+
+        this.tiempoQueSubioPorPrimeraVez = 0;
+        this.tiempoQueSeEstuvoEjecutando = 0;
+        this.tiempoQueTermino = 0;
+        this.tiempoQueSubioAntesTerminar = 0;
 	}   
 
 
@@ -78,6 +91,47 @@ public class Proceso{
 
 	public void setTiempoRequeridoEjecucion(int tiempoRequeridoEjecucion) {
 		this.tiempoRequeridoEjecucion = tiempoRequeridoEjecucion;
+	}
+
+	public int getTiempoQueSubioPorPrimeraVez() {
+		return tiempoQueSubioPorPrimeraVez;
+	}
+
+	public void setTiempoQueSubioPorPrimeraVez(int tiempoQueSubioPorPrimeraVez) {
+		this.tiempoQueSubioPorPrimeraVez = tiempoQueSubioPorPrimeraVez;
+	}
+
+	public int getTiempoQueSeEstuvoEjecutando() {
+		return tiempoQueSeEstuvoEjecutando;
+	}
+
+	public void setTiempoQueSeEstuvoEjecutando(int tiempoQueSeEstuvoEjecutando) {
+		this.tiempoQueSeEstuvoEjecutando = tiempoQueSeEstuvoEjecutando;
+	}
+
+
+	public boolean isSubioPorPrimeraVez() {
+		return subioPorPrimeraVez;
+	}
+
+	public void setSubioPorPrimeraVez(boolean subioPorPrimeraVez) {
+		this.subioPorPrimeraVez = subioPorPrimeraVez;
+	}
+
+	public int getTiempoQueTermino() {
+		return tiempoQueTermino;
+	}
+
+	public void setTiempoQueTermino(int tiempoQueTermino) {
+		this.tiempoQueTermino = tiempoQueTermino;
+	}
+
+	public int getTiempoQueSubioAntesTerminar() {
+		return tiempoQueSubioAntesTerminar;
+	}
+
+	public void setTiempoQueSubioAntesTerminar(int tiempoQueSubioAntesTerminar) {
+		this.tiempoQueSubioAntesTerminar = tiempoQueSubioAntesTerminar;
 	}
 	
 	

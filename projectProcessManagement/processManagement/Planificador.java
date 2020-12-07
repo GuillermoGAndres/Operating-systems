@@ -11,11 +11,14 @@ public class Planificador {
     private Procesador cpu = new Procesador();
     private boolean bajoProcesoCPU = false;
     private boolean entroCPU = false; // Esta variable nos ayuda a saber si entro en el procesador.
-    private static Reloj reloj = new Reloj();    
+    private static Reloj reloj = new Reloj();        
     
 	public void iniciarSimulacion(Proceso[] tablaProcesos){
         AtomicInteger i= new AtomicInteger(0);        
         Proceso proceso = null;
+        // Una vez terminados la ejecucion guardaremos los procesos en el vector para hacer los calculos de tiempo promedio.
+        Proceso[] procesosFinalizados = new Proceso[tablaProcesos.length];
+        AtomicInteger indiceProcesosFinalizados = new AtomicInteger(0);        
         while(true) {
             entroCPU = false; // Inicializamos nuestros variables a cero.
             System.out.printf("Tiempo: %d\n", reloj.getTiempo());            
@@ -64,7 +67,7 @@ public class Planificador {
                 memoriaRam.setTamanio(memoriaRam.getTamanio() + proceso.getTamanio());
                 System.out.printf("Actualizando espacio disponible en la memoria RAM: %dKB\n", memoriaRam.getTamanio());
                 System.out.println("---Insertando a la CPU---");
-                cpu.ejecutar(proceso, reloj, tablaProcesos, i, colaProcesosListos, memoriaRam);
+                cpu.ejecutar(proceso, reloj, tablaProcesos, i, colaProcesosListos, memoriaRam, procesosFinalizados, indiceProcesosFinalizados);
                 // Baja de la CPU
                 System.out.printf("Bajando de la CPU el proceso %s...\n", proceso.getNombre());
                 if(proceso.getTiempoRequeridoEjecucion() > 0) {
@@ -91,6 +94,14 @@ public class Planificador {
         }
 
         System.out.println("Termino la simulacion");
+        System.out.println("Calculo de tiempos");
+        for(Proceso process : procesosFinalizados) {
+            System.out.println(process.getNombre());
+            System.out.println("Ejecucion: " + process.getTiempoQueSeEstuvoEjecutando());
+            System.out.println("Termino: " + process.getTiempoQueTermino());
+            System.out.println("Subio : " + process.getTiempoQueSubioAntesTerminar());    
+        }
+        
         
 	}
 

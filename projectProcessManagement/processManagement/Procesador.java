@@ -1,6 +1,6 @@
 
 import java.util.concurrent.atomic.AtomicInteger;
-
+import java.util.Arrays;
 public class Procesador {
 
     private boolean disponible;
@@ -31,17 +31,32 @@ public class Procesador {
      * Si se ejecuta un proceso significa que libero espacio en la memoria ram, y por la tanto recupero el espacio ocupado
      * por el proceso.
      */   
-    public void ejecutar(Proceso proceso, Reloj reloj, Proceso[] tablaProcesos, AtomicInteger indice, Queue<Proceso> colaProcesosListos, MemoriaRam memoriaRam) {        
+    public void ejecutar(Proceso proceso, Reloj reloj, Proceso[] tablaProcesos, AtomicInteger indice, Queue<Proceso> colaProcesosListos, MemoriaRam memoriaRam, Proceso[] procesosFinalizados, AtomicInteger indiceProcesosFinalizados) {        
+
+        
+        if (proceso.isSubioPorPrimeraVez() == false)
+            proceso.setSubioPorPrimeraVez(true);
+
+        if(proceso.isSubioPorPrimeraVez()) {
+            proceso.setTiempoQueSubioPorPrimeraVez(reloj.getTiempo());
+        }
+
+        proceso.setTiempoQueSubioAntesTerminar(reloj.getTiempo());
         for(int i = 0; i < this.quantum; i++) {
+
             // El procesador acaba antes de que termine su quantum.
-            if(proceso.getTiempoRequeridoEjecucion() == 0)
+            if(proceso.getTiempoRequeridoEjecucion() == 0){
+                proceso.setTiempoQueTermino(reloj.getTiempo());
+                proceso.setTiempoQueSeEstuvoEjecutando(proceso.getTiempoQueSeEstuvoEjecutando() - (i));
+                procesosFinalizados[indiceProcesosFinalizados.get()] = proceso;
+                System.out.println(Arrays.toString(procesosFinalizados));
+                System.out.println("indice finalizados :" + indiceProcesosFinalizados);
+                indiceProcesosFinalizados.set(indiceProcesosFinalizados.get() + 1);
+                System.out.println("indice finalizados :" + indiceProcesosFinalizados);
                 return;
+            }
+            
             //Formar en la lista de procesos
-            // System.out.println("Indice: " + indice);
-            // System.out.println(tablaProcesos[indice.get()]);
-            // System.out.println("getTiempo de llagada el siguiente procesador: " + tablaProcesos[indice.get()].getTiempoLLegadaProceso());
-            // System.out.println("timepo: " + reloj.getTiempo());
-            // System.out.println(indice.get() < tablaProcesos.length && reloj.getTiempo() == tablaProcesos[indice.get()].getTiempoLLegadaProceso());
             if(indice.get() < tablaProcesos.length && reloj.getTiempo() == tablaProcesos[indice.get()].getTiempoLLegadaProceso()) {
                 System.out.println("Insertando a la cola procesos listos ...");
                 //System.out.println("Entro********");
@@ -78,6 +93,7 @@ public class Procesador {
             int t = reloj.getTiempo() + 1;
             reloj.setTiempo(t);
             System.out.printf("Tiempo: %d\n", reloj.getTiempo());
+            proceso.setTiempoQueSeEstuvoEjecutando(proceso.getTiempoQueSeEstuvoEjecutando() + 1);
             dormirProcesador(1000);
             int aux = proceso.getTiempoRequeridoEjecucion();
             proceso.setTiempoRequeridoEjecucion(--aux);            

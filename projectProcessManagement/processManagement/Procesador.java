@@ -34,11 +34,9 @@ public class Procesador {
     public void ejecutar(Proceso proceso, Reloj reloj, Proceso[] tablaProcesos, AtomicInteger indice, Queue<Proceso> colaProcesosListos, MemoriaRam memoriaRam, Proceso[] procesosFinalizados, AtomicInteger indiceProcesosFinalizados) {        
 
         
-        if (proceso.isSubioPorPrimeraVez() == false)
+        if (proceso.isSubioPorPrimeraVez() == false){
             proceso.setSubioPorPrimeraVez(true);
-
-        if(proceso.isSubioPorPrimeraVez()) {
-            proceso.setTiempoQueSubioPorPrimeraVez(reloj.getTiempo());
+            proceso.setTiempoQueSubioPorPrimeraVez(reloj.getTiempo());            
         }
 
         proceso.setTiempoQueSubioAntesTerminar(reloj.getTiempo());
@@ -49,10 +47,10 @@ public class Procesador {
                 proceso.setTiempoQueTermino(reloj.getTiempo());
                 proceso.setTiempoQueSeEstuvoEjecutando(proceso.getTiempoQueSeEstuvoEjecutando() - (i));
                 procesosFinalizados[indiceProcesosFinalizados.get()] = proceso;
-                System.out.println(Arrays.toString(procesosFinalizados));
-                System.out.println("indice finalizados :" + indiceProcesosFinalizados);
+                //System.out.println(Arrays.toString(procesosFinalizados));
+                //System.out.println("indice finalizados :" + indiceProcesosFinalizados);
                 indiceProcesosFinalizados.set(indiceProcesosFinalizados.get() + 1);
-                System.out.println("indice finalizados :" + indiceProcesosFinalizados);
+                //System.out.println("indice finalizados :" + indiceProcesosFinalizados);
                 return;
             }
             
@@ -96,7 +94,21 @@ public class Procesador {
             proceso.setTiempoQueSeEstuvoEjecutando(proceso.getTiempoQueSeEstuvoEjecutando() + 1);
             dormirProcesador(1000);
             int aux = proceso.getTiempoRequeridoEjecucion();
-            proceso.setTiempoRequeridoEjecucion(--aux);            
+            proceso.setTiempoRequeridoEjecucion(--aux);
+            //System.out.println("Tiempo requerido proceso actualizado: " +  proceso.getTiempoRequeridoEjecucion());
+            //System.out.println("Tiempo que se estuvo ejecutando: " + proceso.getTiempoQueSeEstuvoEjecutando());
+            // Verifico otra vez, debe ser antes y despues, porque existe la posibilidad que se el ultimo numero actualizado
+            // sea de 0, por lo tanto, por tanto que guardar sus valores porque ya no entrara nuevamente a la cpu
+            if(proceso.getTiempoRequeridoEjecucion() == 0){
+                proceso.setTiempoQueTermino(reloj.getTiempo());
+                proceso.setTiempoQueSeEstuvoEjecutando(proceso.getTiempoQueSeEstuvoEjecutando() - (i+1));
+                procesosFinalizados[indiceProcesosFinalizados.get()] = proceso;
+                //System.out.println(Arrays.toString(procesosFinalizados));
+                //System.out.println("indice finalizados :" + indiceProcesosFinalizados);
+                indiceProcesosFinalizados.set(indiceProcesosFinalizados.get() + 1);
+                // System.out.println("indice finalizados :" + indiceProcesosFinalizados);
+                return;
+            }
         }
     }
 

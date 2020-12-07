@@ -16,7 +16,8 @@ public class Main {
 		Planificador planificador = new Planificador();
 
         String pathFile = "inputTest.txt";       
- 		Proceso[] tablaProcesos = leerEntradasPorFichero(pathFile,4);        
+ 		//Proceso[] tablaProcesos = leerEntradasPorFichero(pathFile,4);
+        Proceso[] tablaProcesos = pedirDatosUsuario();
         System.out.println("Tabla de procesos");
         System.out.println(Arrays.toString(tablaProcesos));         
         ordenarTabla(tablaProcesos);

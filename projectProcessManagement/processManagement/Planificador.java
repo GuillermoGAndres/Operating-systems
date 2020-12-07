@@ -4,6 +4,7 @@
  *
  */
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Arrays;
 
 public class Planificador {
 	private Queue<Proceso> colaProcesosListos = new LinkedQueue<>();
@@ -79,7 +80,7 @@ public class Planificador {
                 entroCPU = true;
             }
             // Esto nos ayudara a no contar doble, ya que el procesador tambien esta llevando la cuenta.
-            System.out.println("Entro cpu: " + entroCPU);
+            //System.out.println("Entro cpu: " + entroCPU);
             if (!entroCPU){
                 try{
                     Thread.sleep(2000);
@@ -94,15 +95,29 @@ public class Planificador {
         }
 
         System.out.println("Termino la simulacion");
-        System.out.println("Calculo de tiempos");
-        for(Proceso process : procesosFinalizados) {
-            System.out.println(process.getNombre());
-            System.out.println("Ejecucion: " + process.getTiempoQueSeEstuvoEjecutando());
-            System.out.println("Termino: " + process.getTiempoQueTermino());
-            System.out.println("Subio : " + process.getTiempoQueSubioAntesTerminar());    
+        //System.out.println(Arrays.toString(procesosFinalizados));
+        System.out.println("Calculando tiempos");
+        float tiempoPromedioEspera = 0.0f;
+        float tiempoPromedioRespuesta = 0.0f;
+        float tiempoPromedioEjecucion = 0.0f;
+        for(Proceso proces : procesosFinalizados) {
+            // System.out.println(process.getNombre());
+            // System.out.println("Ejecucion: " + process.getTiempoQueSeEstuvoEjecutando());
+            // System.out.println("Termino: " + process.getTiempoQueTermino());
+            // System.out.println("Subio : " + process.getTiempoQueSubioAntesTerminar());
+
+            tiempoPromedioEspera += (proces.getTiempoQueSubioAntesTerminar() - proces.getTiempoLLegadaProceso() - proces.getTiempoQueSeEstuvoEjecutando());
+            tiempoPromedioRespuesta += (proces.getTiempoQueSubioPorPrimeraVez() - proces.getTiempoLLegadaProceso());
+            // System.out.println("proces.getTiempoQueSubioPorPrimeraVez()" + proces.getTiempoQueSubioPorPrimeraVez());
+            // System.out.println("proces.getTiempoLLegadaProceso(): " + proces.getTiempoLLegadaProceso());
+            tiempoPromedioEjecucion += (proces.getTiempoQueTermino() - proces.getTiempoLLegadaProceso());
+            
         }
-        
-        
+
+        System.out.println("Tiempo Promedio Espera: " + tiempoPromedioEspera/ procesosFinalizados.length + " ms");
+        System.out.println("Tiempo Promedio Ejecucion: " + tiempoPromedioEjecucion/ procesosFinalizados.length + " ms");
+        System.out.println("Tiempo Promedio Respuesta: " + tiempoPromedioRespuesta/ procesosFinalizados.length + " ms");        
+                
 	}
 
 

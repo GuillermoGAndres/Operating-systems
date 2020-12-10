@@ -1,0 +1,58 @@
+
+* Objetivo principal
+  Realizar busquedas de archivos en un directorio.
+
+** Condiciones de diseño
+   Buscar por metacaracteres.
+
+***** Entradas 
+     a)La ruta del directorio a trabajar
+     b)El patrón de búsqueda (patrón para el nombre de los archivos a buscar)
+
+*** Mensajes
+    * Cada vez que termine un hilo debe de mandar un mensaje a pantalla indicando el nombre, tiempo y el mensaje de que ha terminado.
+    * Cada mensaje a pantalla deberá de ir acompañado con el nombredel hilo.
+
+* Tareas
+*** Main
+    Crea un hilo(único hilo creado por el main)para listar el contenido del directorio
+    Presenta el número de hilos activos en ese momento y lista la información de cada hilo activo
+
+*** Hijo Main
+    Listar el contenido del directorio
+    Lista el contenido del directorio con la ruta absoluta del archivo
+    Crea un hilo (nieto)para que realice la tarea de busque archivos de acuerdo al patrón solicitado.
+    
+*** Nieto Main
+    Buscar archivos de acuerdo al patron.
+    Crea dos hilos (bisnietos) para que realicen la búsqueda (de acuerdo al patrón):
+    E hilo nieto, Realizarála búsqueda de _archivo_ y _directorio_ (*sin hacer distinción*) que cumplan con el patrón solicitado y los lista a pantalla, indicando su nombre y tamaño del archivo.
+    ~~~
+    NameThread  -> nameFile  | tamanio 
+    ~~~
+    
+*** Bisnietos Main (Distinción)
+
+    *Bisnieto1*:  realizará la tarea de buscar y filtrar solo archivos.
+    Uno realiza la búsqueda de archivos que cumplen el patrón de búsqueda y los lista a pantalla, indicando su nombre y tamaño del archivo.
+    ~~~
+    nameThread(files) -> nameFile  | tamanio 
+    ~~~
+
+    *Bisnieto2* : realizará la tarea de buscar y filtrar solo directorios
+    El otro hilo realiza la búsqueda de directoriosque cumplen el patrón de búsqueda y los lista a pantalla, indicando su nombre y tamaño del archivo.
+    ~~~
+    nameThread(directorios) -> nameDir  | tamanio 
+    ~~~
+
+*La búsqueda y listado deberá de ser en cascada, es decir listar solo directorios y a su vez los directorios dentro de ellos, y así sucesivamente presentando la información solicitada (solo de directorios)*
+
+
+
+
+    
+
+     
+   
+
+

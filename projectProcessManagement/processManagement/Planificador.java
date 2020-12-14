@@ -12,7 +12,11 @@ public class Planificador {
     private Procesador cpu = new Procesador();
     private boolean bajoProcesoCPU = false;
     private boolean entroCPU = false; // Esta variable nos ayuda a saber si entro en el procesador.
-    private static Reloj reloj = new Reloj();        
+    private static Reloj reloj = new Reloj();
+
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_RED = "\u001B[31m";
+	public static final String ANSI_RESET = "\u001B[0m";
     
 	public void iniciarSimulacion(Proceso[] tablaProcesos){
         AtomicInteger i= new AtomicInteger(0);        
@@ -57,7 +61,7 @@ public class Planificador {
             // Verificamos que exista tamaño en la memoria, que existe tambien proceoso en cola de espera
             // y que tambien exista espacio adecuado para el proceoso.
             // Planificador de mediano plazo
-            if ( memoriaRam.estaDispoble() && !colaProcesosListos.isEmpty() && (memoriaRam.getTamanio() - colaProcesosListos.first().getTamanio()) >= 0 ) {
+            while ( memoriaRam.estaDispoble() && !colaProcesosListos.isEmpty() && (memoriaRam.getTamanio() - colaProcesosListos.first().getTamanio()) >= 0 ) {
                 proceso = null;
                 try{
                     proceso = colaProcesosListos.dequeue();
@@ -65,6 +69,7 @@ public class Planificador {
                 System.out.printf("***Subio el proceso %s a la memoria***\n", proceso.getNombre());
                 System.out.println("***Insertando en la memoria RAM***");
                 dormir();
+                System.out.println(ANSI_RED + "\tMemoria Ram" + ANSI_RESET);
                 //System.out.println("Ram tamanio " + memoriaRam.getTamanio());
                 //System.out.println("Proceso tamanio " + proceso.getTamanio());
                 int tamanioRestante = memoriaRam.getTamanio() - proceso.getTamanio();                
@@ -153,6 +158,7 @@ public class Planificador {
 	public void agregarColaProcesosListo(Proceso proceso) {
         System.out.println("Insertando a la cola procesos listos ...");
         dormir();
+        System.out.println(ANSI_GREEN+"\tCola de Procesos"+ANSI_RESET);
         colaProcesosListos.enqueue(proceso);
         System.out.println(colaProcesosListos);
 

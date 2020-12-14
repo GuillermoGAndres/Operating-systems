@@ -4,7 +4,12 @@ import java.util.Arrays;
 public class Procesador {
 
     private boolean disponible;
-    private int quantum; 
+    private int quantum;
+    
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_RED = "\u001B[31m";
+	public static final String ANSI_RESET = "\u001B[0m";
+    
     public Procesador() {
         disponible = true;
         quantum = 4; 
@@ -79,6 +84,7 @@ public class Procesador {
                 System.out.printf("Subio el proceso %s a la memoria\n", procesoListo.getNombre());
                 System.out.println("***Insertando en la memoria RAM***");
                 dormirProcesador(2000);
+                System.out.println(ANSI_RED + "\tMemoria Ram" + ANSI_RESET);
                 //System.out.println("Ram tamanio " + memoriaRam.getTamanio());
                 //System.out.println("Proceso tamanio " + proceso.getTamanio());
                 int tamanioRestante = memoriaRam.getTamanio() - procesoListo.getTamanio();                
@@ -142,6 +148,7 @@ public class Procesador {
 	public void agregarColaProcesosListo(Proceso proceso, Queue<Proceso> colaProcesosListos) {
         System.out.println("Insertando a la cola procesos listos ...");
         dormir();
+        System.out.println(ANSI_GREEN+"\tCola de Procesos"+ANSI_RESET);
         colaProcesosListos.enqueue(proceso);
         System.out.println(colaProcesosListos);
 

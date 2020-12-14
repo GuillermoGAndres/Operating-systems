@@ -19,18 +19,34 @@ public class Planificador {
         Proceso proceso = null;
         // Una vez terminados la ejecucion guardaremos los procesos en el vector para hacer los calculos de tiempo promedio.
         Proceso[] procesosFinalizados = new Proceso[tablaProcesos.length];
+        int totalProcesosFinalizados = tablaProcesos.length;
         AtomicInteger indiceProcesosFinalizados = new AtomicInteger(0);        
-        while(true) {
+
+        // Necesistaremos romper ese ciclo while para pueda calcular los tiempos.
+        // int tiempoTotalEjecucion = 0;
+        // for(int k=0; k < tablaProcesos.length; k++) {
+        //     tiempoTotalEjecucion += tablaProcesos[k].getTiempoRequeridoEjecucion();
+        // }
+        // System.out.println("Tiempo que tardara la simulacion: " + tiempoTotalEjecucion);
+        // reloj.getTiempo() <= tiempoTotalEjecucion
+
+        while(indiceProcesosFinalizados.get() < totalProcesosFinalizados) {
             entroCPU = false; // Inicializamos nuestros variables a cero.
-            System.out.printf("Tiempo: %d\n", reloj.getTiempo());            
+            System.out.printf("Tiempo: %d\n", reloj.getTiempo());
+            
             // Como se que la tabla de procesos ya esta ordena, los posteriores elementos
             // tendran un numero mayor de tiempo de llegada
+            // Error -> Existe la posibilidad de que todos lleguen al mismo tiempo y por lo tanto si estara ordenedad, pero
+            // en el instance de tiempo tienen que entrar todos a la cola de procesos listo y no solamente el que sigue
+            // de la tabla de procesos listos.
 
-            if(i.get() < tablaProcesos.length && reloj.getTiempo() == tablaProcesos[i.get()].getTiempoLLegadaProceso()) {
-                agregarColaProcesosListo(tablaProcesos[i.get()]);
-                int tmp = i.get() + 1;
-                i.set(tmp);
-            }
+            // if(i.get() < tablaProcesos.length && reloj.getTiempo() == tablaProcesos[i.get()].getTiempoLLegadaProceso()) {
+            //     agregarColaProcesosListo(tablaProcesos[i.get()]);
+            //     int tmp = i.get() + 1;
+            //     i.set(tmp);
+            // }
+            verificarTiempoLLegadaProcesos(tablaProcesos, reloj, i);
+            //System.out.println("(Atomic integer)Index: " + i);
             
             // Siguiendo la politica primero se forman y luego vaja el proceso a la cola, se pone aqui el if.
             if(bajoProcesoCPU) {
@@ -89,7 +105,8 @@ public class Planificador {
                 reloj.setTiempo(t);
                 // Como sabemos que existiran procesos la cpu siempre esta trabando,
                 // en el momento que ya no esta trabanjo significa que fue el ultimo proceoso ejecutar.
-                break;
+                // Error existen la posibilidad que en los tiempos intermedios no se ejecute el CPU porque no ha llegado un proceso.
+                //break;
             }
             
         }
@@ -100,17 +117,25 @@ public class Planificador {
         float tiempoPromedioEspera = 0.0f;
         float tiempoPromedioRespuesta = 0.0f;
         float tiempoPromedioEjecucion = 0.0f;
-        for(Proceso proces : procesosFinalizados) {
+        System.out.println("--------------------------------------");
+        for(Proceso process : procesosFinalizados) {
             // System.out.println(process.getNombre());
+            // System.out.println("-------Proceso " + process.getNombre() + "-----------");
             // System.out.println("Ejecucion: " + process.getTiempoQueSeEstuvoEjecutando());
             // System.out.println("Termino: " + process.getTiempoQueTermino());
             // System.out.println("Subio : " + process.getTiempoQueSubioAntesTerminar());
+            // System.out.println("Tiempo de llegada: " + process.getTiempoLLegadaProceso());
+            // System.out.println("Tiempo espera");
+            // System.out.printf("%d - %d - %d\n", process.getTiempoQueSubioAntesTerminar(),  process.getTiempoLLegadaProceso(), process.getTiempoQueSeEstuvoEjecutando() );
+            // System.out.println("Tiempo ejecucion");
+            // System.out.printf("%d - %d\n", process.getTiempoQueTermino(), process.getTiempoLLegadaProceso());
+            // System.out.println("Tiempo respuesta");
+            // System.out.printf("%d - %d\n", process.getTiempoQueSubioPorPrimeraVez(), process.getTiempoLLegadaProceso());
 
-            tiempoPromedioEspera += (proces.getTiempoQueSubioAntesTerminar() - proces.getTiempoLLegadaProceso() - proces.getTiempoQueSeEstuvoEjecutando());
-            tiempoPromedioRespuesta += (proces.getTiempoQueSubioPorPrimeraVez() - proces.getTiempoLLegadaProceso());
-            // System.out.println("proces.getTiempoQueSubioPorPrimeraVez()" + proces.getTiempoQueSubioPorPrimeraVez());
-            // System.out.println("proces.getTiempoLLegadaProceso(): " + proces.getTiempoLLegadaProceso());
-            tiempoPromedioEjecucion += (proces.getTiempoQueTermino() - proces.getTiempoLLegadaProceso());
+            tiempoPromedioEspera += (process.getTiempoQueSubioAntesTerminar() - process.getTiempoLLegadaProceso() - process.getTiempoQueSeEstuvoEjecutando());
+            tiempoPromedioEjecucion += (process.getTiempoQueTermino() - process.getTiempoLLegadaProceso());
+            tiempoPromedioRespuesta += (process.getTiempoQueSubioPorPrimeraVez() - process.getTiempoLLegadaProceso());
+
             
         }
 
@@ -137,6 +162,19 @@ public class Planificador {
         try{
             Thread.sleep(2000);
         } catch (InterruptedException e){}
+    }
+
+    /**
+     * Veficica en la tabla de procesos los tiempos de llegada y los coloca en la table de procesos.
+     */
+    private void verificarTiempoLLegadaProcesos(Proceso[] tablaProcesos, Reloj tiempo, AtomicInteger index) {
+
+        for(int i = index.get(); i < tablaProcesos.length; i++) {
+            if (tablaProcesos[i].getTiempoLLegadaProceso() == tiempo.getTiempo()) {
+                agregarColaProcesosListo(tablaProcesos[i]);
+                index.set(index.get() + 1);                    
+            }
+        }
     }
 
     

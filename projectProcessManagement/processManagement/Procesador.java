@@ -46,6 +46,7 @@ public class Procesador {
             if(proceso.getTiempoRequeridoEjecucion() == 0){
                 proceso.setTiempoQueTermino(reloj.getTiempo());
                 proceso.setTiempoQueSeEstuvoEjecutando(proceso.getTiempoQueSeEstuvoEjecutando() - (i));
+                
                 procesosFinalizados[indiceProcesosFinalizados.get()] = proceso;
                 //System.out.println(Arrays.toString(procesosFinalizados));
                 //System.out.println("indice finalizados :" + indiceProcesosFinalizados);
@@ -55,16 +56,17 @@ public class Procesador {
             }
             
             //Formar en la lista de procesos
-            if(indice.get() < tablaProcesos.length && reloj.getTiempo() == tablaProcesos[indice.get()].getTiempoLLegadaProceso()) {
-                System.out.println("Insertando a la cola procesos listos ...");
-                //System.out.println("Entro********");
-                //System.out.println("Valor de indice: " + indice);
-                dormirProcesador(2000);
-                colaProcesosListos.enqueue(tablaProcesos[indice.get()]);
-                System.out.println(colaProcesosListos);
-                int tmp = indice.get() + 1;
-                indice.set(tmp);
-            }
+            // if(indice.get() < tablaProcesos.length && reloj.getTiempo() == tablaProcesos[indice.get()].getTiempoLLegadaProceso()) {
+            //     System.out.println("Insertando a la cola procesos listos ...");
+            //     //System.out.println("Entro********");
+            //     //System.out.println("Valor de indice: " + indice);
+            //     dormirProcesador(2000);
+            //     colaProcesosListos.enqueue(tablaProcesos[indice.get()]);
+            //     System.out.println(colaProcesosListos);
+            //     int tmp = indice.get() + 1;
+            //     indice.set(tmp);
+            // }
+            verificarTiempoLLegadaProcesos(tablaProcesos, reloj, indice, colaProcesosListos);
 
             // Verificamos que exista tamaño en la memoria, que existe tambien proceoso en cola de espera
             // y que tambien exista espacio adecuado para el proceoso.
@@ -99,13 +101,15 @@ public class Procesador {
             //System.out.println("Tiempo que se estuvo ejecutando: " + proceso.getTiempoQueSeEstuvoEjecutando());
             // Verifico otra vez, debe ser antes y despues, porque existe la posibilidad que se el ultimo numero actualizado
             // sea de 0, por lo tanto, por tanto que guardar sus valores porque ya no entrara nuevamente a la cpu
-            if(proceso.getTiempoRequeridoEjecucion() == 0){
+            if(proceso.getTiempoRequeridoEjecucion() == 0){                
                 proceso.setTiempoQueTermino(reloj.getTiempo());
                 proceso.setTiempoQueSeEstuvoEjecutando(proceso.getTiempoQueSeEstuvoEjecutando() - (i+1));
+               
                 procesosFinalizados[indiceProcesosFinalizados.get()] = proceso;
                 //System.out.println(Arrays.toString(procesosFinalizados));
                 //System.out.println("indice finalizados :" + indiceProcesosFinalizados);
                 indiceProcesosFinalizados.set(indiceProcesosFinalizados.get() + 1);
+                
                 // System.out.println("indice finalizados :" + indiceProcesosFinalizados);
                 return;
             }
@@ -115,6 +119,37 @@ public class Procesador {
     private void dormirProcesador(int tempo) {
         try{
             Thread.sleep(tempo);
+        } catch (InterruptedException e){}
+    }
+
+    /**
+     * Veficica en la tabla de procesos los tiempos de llegada y los coloca en la table de procesos.
+     */
+    private void verificarTiempoLLegadaProcesos(Proceso[] tablaProcesos, Reloj tiempo, AtomicInteger index,Queue<Proceso> colaProcesosListos) {
+
+        for(int i = index.get(); i < tablaProcesos.length; i++) {
+            if (tablaProcesos[i].getTiempoLLegadaProceso() == tiempo.getTiempo()) {
+                agregarColaProcesosListo(tablaProcesos[i], colaProcesosListos);
+                index.set(index.get() + 1);                    
+            }
+        }
+    }
+
+    	/**
+	 * Agregar a la cola de procesos listos para despues ingresar a la memoria.
+     * 
+	 */
+	public void agregarColaProcesosListo(Proceso proceso, Queue<Proceso> colaProcesosListos) {
+        System.out.println("Insertando a la cola procesos listos ...");
+        dormir();
+        colaProcesosListos.enqueue(proceso);
+        System.out.println(colaProcesosListos);
+
+	}
+
+    private void dormir() {
+        try{
+            Thread.sleep(2000);
         } catch (InterruptedException e){}
     }
    

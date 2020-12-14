@@ -1,0 +1,5 @@
+id proceso, nombre, tamanio KB, prioridad, tiempoEjecucion, tiempollegada
+1, P1, 25, 5, 6, 1
+2, p2, 30, 5, 18, 4
+3, P3, 40, 5, 12, 6
+4, P4, 12, 5, 17, 7

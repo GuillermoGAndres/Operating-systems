@@ -32,6 +32,19 @@ Tiempo de respuesta = Tsubio por primera vez - Tllego.
 -------------------------------------
 ## Projects
 
+## [Backups](https://github.com/GuillermoGAndres/Operating-systems/tree/main/projectBackups)
+
+Generador de backups, el proceso padre genera un proceso hijo para dividr las tareas y hacerlo de manera concurrente, el padre se encarga se buscar la carpeta a respaldar y le pasa los nombres de los archivos a su proceso hijo para que se encargue de generar una copia exacta y depositarlo en la carpeta destino indicada por el usuario.
+
+![demostracion](./projectBackups/img/backupsTerminado.gif)
+
+## [Proccess Managment](https://github.com/GuillermoGAndres/Operating-systems/tree/main/projectProcessManagement)
+
+# Proccess Managment
+Simulador de corto y mediano plazo de un gestor de procesos.
+
+![Demo](./img/demo.mp4)
+
 
 ---
 ## Theory
@@ -68,6 +81,16 @@ Para que cada proceso sea ejecutado por el procesador, primero se organizar la c
 ![Diagrama de cola](./img/cola_diagrama.png)
 
 Como son miles de procesos que quieren entrar a ejecucion y ademas de que algunos requeriran dispositivos de entrada/salida, es natural que cada proceso vaya formandose en nueva cola para cada tarea en particular.
+
+## Threads
+
+![Thread 1](./img/Thread2.png)
+
+![Thread 2](./img/Thread3.png)
+
+![Thread 3](./img/Thread1.jpg)
+
+
 
 ## Creacion de procesos
 

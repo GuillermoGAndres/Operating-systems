@@ -14,18 +14,19 @@ public class Main {
 	public static void main(String[] args) {
 		Queue<Proceso> colaProcesosListos = new LinkedQueue<>();
 		Planificador planificador = new Planificador();
-        //String pathFile = "inputTest.txt"; // pasado  // 23.5 3.75 37     
+        //@tests
+        String pathFile = "inputTest.txt"; // pasado  // 23.5 3.75 37     
         //String pathFile = "inputTest3.txt"; //pasado // 21.5 3.5 34.75
- 		//Proceso[] tablaProcesos = leerEntradasPorFichero(pathFile,4);
+ 		Proceso[] tablaProcesos = leerEntradasPorFichero(pathFile,4);
 
-        String pathFile = "inputTest2.txt"; // pasado   34.5 9.6 44.83
+        //String pathFile = "inputTest2.txt"; // pasado   34.5 9.6 44.83
         //String pathFile = "inputTest4.txt"; // pasado con quantum 2.  24 5 31.33              
- 		Proceso[] tablaProcesos = leerEntradasPorFichero(pathFile,6);
+ 		//Proceso[] tablaProcesos = leerEntradasPorFichero(pathFile,6);
 
 
         //Proceso[] tablaProcesos = pedirDatosUsuario();
         System.out.println("Tabla de procesos");
-        System.out.println(Arrays.toString(tablaProcesos));         
+        //System.out.println(Arrays.toString(tablaProcesos));         
         ordenarTabla(tablaProcesos);
         System.out.println(Arrays.toString(tablaProcesos));
         System.out.println("");

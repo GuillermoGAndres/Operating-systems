@@ -1,3 +1,5 @@
+>> Freedom is the power to decide what your computer does, and the only way to have this freedom is to know what your computer is doing.
+
 # Planificadores
 ------------------------------------
 1.- Planificador FCFS (First-come, First-serverd)
@@ -106,3 +108,8 @@ Como son miles de procesos que quieren entrar a ejecucion y ademas de que alguno
 ![Ejercicio 7b](./img/7B.png)
 
 
+### References
+---
+Abraham Siberschatz, Operating System Concepts, ninth edition.
+
+Andres S. Tanenbaum, Operating Systems Design and Implementation

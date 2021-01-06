@@ -40,7 +40,6 @@ Generador de backups, el proceso padre genera un proceso hijo para dividr las ta
 
 ## [Proccess Managment](https://github.com/GuillermoGAndres/Operating-systems/tree/main/projectProcessManagement)
 
-# Proccess Managment
 Simulador de corto y mediano plazo de un gestor de procesos.
 
 ![Demo](./projectProcessManagement/img/demo.gif)
